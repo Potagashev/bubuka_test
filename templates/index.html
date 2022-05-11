@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% if not is_authorized %}
+        <meta http-equiv="refresh" content="0; url=http://localhost:8000/login" />
+    {% endif %}
+    <meta charset="UTF-8">
+    <title>Главная Страница</title>
+</head>
+<body>
+    {% if login %}
+        Приветствую, {{ login }}!
+    {% endif %}
+    Только авторизованные могут это видеть!!!
+    <div>
+        <a href="http://localhost:8000/logout">Выйти</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% if is_authorized %}
+        <meta http-equiv="refresh" content="0; url=http://localhost:8000/" />
+    {% endif %}
+    <meta charset="UTF-8">
+    <title>Вход</title>
+</head>
+<body>
+    {% if message %}
+        <h3>{{ message }}</h3>
+    {% endif %}
+    <h2>Вход</h2>
+    <form method="post" action="http://localhost:8000">
+        <p>Логин<br/>
+            <input name="login" type="text">
+        </p>
+        <p>Пароль<br/>
+            <input name="password" type="password">
+        </p>
+        <input type="submit" value="Войти">
+        <div><a href="http://localhost:8000/signup">Зарегистрироваться</a></div>
+    </form>
+</body>
+</html>

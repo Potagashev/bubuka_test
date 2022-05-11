@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% if is_authorized %}
+        <meta http-equiv="refresh" content="0; url=http://localhost:8000/" />
+    {% endif %}
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+</head>
+<body>
+    <h2>Регистрация</h2>
+    <form method="post" action="http://localhost:8000/login">
+        <p>Логин<br/>
+            <input name="login" type="text">
+        </p>
+        <p>Почта<br/>
+            <input name="email" type="email">
+        </p>
+        <p>Пароль<br/>
+            <input name="password" type="password">
+        </p>
+        <p>Подтверждение пароля<br/>
+            <input name="confirm_password" type="password">
+        </p>
+
+        <input type="submit" value="Регистрация">
+        <div><a href="http://localhost:8000/login">Войти</a></div>
+    </form>
+</body>
+</html>
