@@ -15,5 +15,29 @@
     <div>
         <a href="http://localhost:8000/logout">Выйти</a>
     </div>
+
+    {% for continent in continents %}
+        <div><h3>{{ continent[0] }}</h3>
+            <table>
+                <tbody>
+                <tr>
+                    <th>М</th>
+                    <th>Город / Агломерация</th>
+                    <th>Страна</th>
+                    <th>Население агломерации</th>
+                </tr>
+                {% for city in cities[continent[0]] %}
+                <tr>
+                    <td>{{ city[0] }}</td>
+                    <td>{{ city[1] }}</td>
+                    <td>{{ city[2] }}</td>
+                    <td>{{ city[3] }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+
 </body>
 </html>

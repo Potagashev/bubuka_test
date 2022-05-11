@@ -1,10 +1,10 @@
 import cgi
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import http.cookies
+
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from constants import COOKIE_NAME
-
 from utils import \
     get_login_by_cookie, \
     delete_cookie, \
@@ -12,7 +12,7 @@ from utils import \
     create_user, \
     update_cookie, \
     check_cookie, \
-    generate_cookie
+    generate_cookie, get_continents, get_cities
 
 
 class HttpProcessor(BaseHTTPRequestHandler):
@@ -68,6 +68,11 @@ class HttpProcessor(BaseHTTPRequestHandler):
         is_authorized = False
         login = None
         message = None
+
+        continents = get_continents()
+        cities = {}
+        for continent in continents:
+            cities[continent[0]] = get_cities(continent[0])
 
         form = cgi.FieldStorage(
             fp=self.rfile,
@@ -136,6 +141,8 @@ class HttpProcessor(BaseHTTPRequestHandler):
         )
         template = env.get_template(template_name)
         response_body = bytes(template.render(
+            continents=continents,
+            cities=cities,
             login=login,
             status=status,
             message=message,

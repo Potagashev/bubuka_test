@@ -94,3 +94,34 @@ def generate_cookie(login, password):
     string = f'{login}.{password}.{SECRET_KEY_FOR_COOKIE_GENERATOR}'
     cookie = hashlib.sha256(string.encode()).hexdigest()
     return str(cookie)
+
+
+def get_continents():
+    with PSQLConnection() as connection:
+        cursor = connection.cursor()
+        query = "SELECT continent FROM countries GROUP BY continent ORDER BY continent"
+        cursor.execute(query)
+        try:
+            continents = cursor.fetchall()
+        except TypeError:
+            return None
+        return continents
+
+
+def get_cities(continent):
+    with PSQLConnection() as connection:
+        cursor = connection.cursor()
+        query = f"""
+            SELECT row_number() over (), c.city, c.country, population
+            FROM countries
+            INNER JOIN cities c on countries.country = c.country
+            INNER JOIN population p on c.city = p.city
+            WHERE continent = '{continent}'
+            ORDER BY population DESC
+        """
+        cursor.execute(query)
+        try:
+            cities = cursor.fetchall()
+        except TypeError:
+            return None
+        return cities
