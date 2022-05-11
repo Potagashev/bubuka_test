@@ -11,7 +11,7 @@ from utils import \
     get_password_by_login, \
     create_user, \
     is_cookie_actual, \
-    update_cookie
+    update_cookie, check_cookie
 
 
 class HttpProcessor(BaseHTTPRequestHandler):
@@ -22,30 +22,15 @@ class HttpProcessor(BaseHTTPRequestHandler):
         login = None
 
         if self.path == '/':
-            try:
-                all_cookies = http.cookies.SimpleCookie(self.headers['Cookie'])
-                given_cookie = all_cookies['bubuka-test-cookie'].value
-                login = get_login_by_cookie(given_cookie)
-            except KeyError:
-                is_authorized = False
-            if login is not None:
-                is_authorized = True
+            is_authorized = check_cookie(headers=self.headers)
+            all_cookies = http.cookies.SimpleCookie(self.headers['Cookie'])
+            given_cookie = all_cookies['bubuka-test-cookie'].value
+            login = get_login_by_cookie(given_cookie)
             template_name = 'index.html'
 
         elif self.path == '/login':
             # сюда можно только если не авторизован(нет кук), иначе редирект на главную
-            try:
-                all_cookies = http.cookies.SimpleCookie(self.headers['Cookie'])
-                given_cookie = all_cookies['bubuka-test-cookie'].value
-                if is_cookie_actual(given_cookie):
-                    is_authorized = True
-                else:
-                    is_authorized = False
-            except KeyError:
-                is_authorized = False
-
-            print(is_authorized)
-
+            is_authorized = check_cookie(headers=self.headers)
             template_name = 'login.html'
 
         elif self.path == '/logout':
@@ -58,13 +43,7 @@ class HttpProcessor(BaseHTTPRequestHandler):
 
         elif self.path == '/signup':
             # сюда можно только если не авторизован(нет кук), иначе редирект на главную
-            try:
-                all_cookies = http.cookies.SimpleCookie(self.headers['Cookie'])
-                given_cookie = all_cookies['bubuka-test-cookie'].value
-                if given_cookie is None:
-                    is_authorized = False
-            except KeyError:
-                is_authorized = False
+            is_authorized = check_cookie(headers=self.headers)
             template_name = 'signup.html'
 
         else:

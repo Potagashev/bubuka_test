@@ -1,3 +1,5 @@
+import http.cookies
+
 from db_connection import PSQLConnection
 
 
@@ -72,3 +74,15 @@ def create_user(
         query = f"INSERT INTO users (id, login, email, password, authorization_cookie) "\
                 f"VALUES (DEFAULT, '{login}', '{email}', '{password}', NULL);"
         cursor.execute(query)
+
+
+def check_cookie(headers):
+    try:
+        all_cookies = http.cookies.SimpleCookie(headers['Cookie'])
+        given_cookie = all_cookies['bubuka-test-cookie'].value
+        if is_cookie_actual(given_cookie):
+            return True
+        else:
+            return False
+    except KeyError:
+        return False
