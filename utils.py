@@ -58,14 +58,6 @@ def update_cookie(login, given_cookie):
         cursor.execute(query)
 
 
-def is_credentials_valid_for_registration(
-        login,
-        email,
-        password
-):
-    pass
-
-
 def create_user(
         login,
         email,
