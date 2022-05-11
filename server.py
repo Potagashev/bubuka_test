@@ -16,37 +16,45 @@ from utils import \
 
 
 class HttpProcessor(BaseHTTPRequestHandler):
-
+    """
+    Функция обрабатывает только ГЕТ запросы
+    Отдает http ответы в зависимости от URL запроса
+    """
     def do_GET(self):
-        status = 200
-        is_authorized = False
+        status = 200  # меняется в дальнейшем
+        is_authorized = False  # передается в шаблон. в зависимости от этого параметра решается, будет ли переадресация
         login = None
 
+        continents = get_continents()
+        cities = {}
+        for continent in continents:
+            cities[continent[0]] = get_cities(continent[0])
+
+        # ---------------------------- главная страница -------------
         if self.path == '/':
             is_authorized = check_cookie(headers=self.headers)
             all_cookies = http.cookies.SimpleCookie(self.headers['Cookie'])
             given_cookie = all_cookies[COOKIE_NAME].value
             login = get_login_by_cookie(given_cookie)
             template_name = 'index.html'
-
+        # ---------------------------- страница входа --------------------------
         elif self.path == '/login':
-            # сюда можно только если не авторизован(нет кук), иначе редирект на главную
+            # сюда можно, только если не авторизован(нет кук), иначе редирект на главную
             is_authorized = check_cookie(headers=self.headers)
             template_name = 'login.html'
-
+        # ---------------------------- выход из учетной записи ------------------------
         elif self.path == '/logout':
-            # some logic with logging out
-            # удалить куки
+            # удаление кук
             all_cookies = http.cookies.SimpleCookie(self.headers['Cookie'])
             given_cookie = all_cookies[COOKIE_NAME].value
             delete_cookie(given_cookie)
             template_name = 'logout.html'
-
+        # ---------------------------- регистрация ----------------------------
         elif self.path == '/signup':
             # сюда можно только если не авторизован(нет кук), иначе редирект на главную
             is_authorized = check_cookie(headers=self.headers)
             template_name = 'signup.html'
-
+        # ---------------------------- все остальные запросы ------------------------------
         else:
             template_name = 'not_found.html'
             status = 404
@@ -55,12 +63,19 @@ class HttpProcessor(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
+        # используется шаблонизатор jinja2
         env = Environment(
             loader=PackageLoader('server'),
             autoescape=select_autoescape()
         )
         template = env.get_template(template_name)
-        response_body = bytes(template.render(login=login, is_authorized=is_authorized), encoding='utf-8')
+        response_body = bytes(template.render(
+            login=login,
+            is_authorized=is_authorized,
+            continents=continents,
+            cities=cities
+        ), encoding='utf-8')
+
         self.wfile.write(response_body)
 
     def do_POST(self):
@@ -116,7 +131,7 @@ class HttpProcessor(BaseHTTPRequestHandler):
             login = form.getvalue('login')
             email = form.getvalue('email')
             password = form.getvalue('password')
-
+            # отсутствует валидация входных данных
             create_user(
                 login=login,
                 email=email,
