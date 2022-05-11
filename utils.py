@@ -1,4 +1,6 @@
 import http.cookies
+import hashlib
+from constants import SECRET_KEY_FOR_COOKIE_GENERATOR
 
 from db_connection import PSQLConnection
 
@@ -86,3 +88,9 @@ def check_cookie(headers):
             return False
     except KeyError:
         return False
+
+
+def generate_cookie(login, password):
+    string = f'{login}.{password}.{SECRET_KEY_FOR_COOKIE_GENERATOR}'
+    cookie = hashlib.sha256(string.encode()).hexdigest()
+    return str(cookie)
